@@ -4,3 +4,11 @@ __pycache__/
 .idea/
 .vscode/
 .DS_Store
+.pytest_cache/
+.venv/
+venv/
+
+# figures/ and data/ ARE tracked: they are the published artefacts and the
+# numerical content behind them.  Only scratch output is ignored.
+figures/_scratch/
+data/_scratch/

@@ -62,13 +62,21 @@ def rhs(t, y, a0: float, L: float):
     return [Fx, Fy, Fz, dgamma, deta]
 
 
-def solve_reference(a0: float, L: float, eta0: float = -3.0,
+def solve_reference(a0: float, L: float, eta0: float | None = None,
                     t_max: float | None = None, n_dense: int = 4000,
                     rtol: float = 1e-11, atol: float = 1e-13):
     """High-accuracy reference trajectory via DOP853.
 
     Returns t, y where y has shape (n_dense, 5).
+
+    ``eta0`` defaults to ``-3*L``, i.e. the electron starts where the pulse
+    envelope is below exp(-9) of its peak.  (Earlier revisions defaulted to
+    the absolute value -3.0, which for L = 2*pi placed the electron *inside*
+    the pulse and made the module self-test report a spurious gamma_max; the
+    training scripts always passed eta0 explicitly and were unaffected.)
     """
+    if eta0 is None:
+        eta0 = -3.0 * L
     # The pulse passes through over ~6L; allow some buffer.
     if t_max is None:
         t_max = 2.0 * abs(eta0) + 6.0 * L

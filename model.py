@@ -67,6 +67,42 @@ class CoupledPINN(nn.Module):
         return self.y_mean + self.y_std * raw
 
 
+class HardConstraintPINN(CoupledPINN):
+    """Variant in which the Lorentz invariant is satisfied by construction.
+
+    The network predicts only (Px, Py, Pz, eta); the Lorentz factor is then
+    obtained analytically as
+
+        gamma = sqrt(1 + Px^2 + Py^2 + Pz^2),
+
+    so that gamma^2 - 1 - |P|^2 = 0 holds to machine precision and no
+    lambda_phys balancing is needed.  Provided to quantify the gap between
+    the soft-constraint network of the paper and the DOP853 reference floor
+    (referee 3, comment 5): the soft-constrained model cannot go below its own
+    approximation error, whereas this one is limited only by how well it fits
+    the momentum channels.
+
+    The output layout is the same five-component vector, so it is a drop-in
+    replacement for :class:`CoupledPINN` at evaluation time.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Re-wire the last layer to four outputs: (Px, Py, Pz, eta).
+        hidden = self.net[-1].in_features
+        self.net[-1] = nn.Linear(hidden, 4)
+
+    def forward(self, t: torch.Tensor) -> torch.Tensor:
+        raw = self.net(self.features(t))
+        mean, std = self.y_mean, self.y_std
+        idx = torch.tensor([0, 1, 2, 4], device=raw.device)
+        scaled = mean[idx] + std[idx] * raw
+        P = scaled[:, :3]
+        eta = scaled[:, 3:4]
+        gamma = torch.sqrt(1.0 + (P * P).sum(dim=-1, keepdim=True))
+        return torch.cat([P, gamma, eta], dim=-1)
+
+
 def make_collocation(t_max: float, n: int, device: str = "cuda") -> torch.Tensor:
     t = torch.linspace(0.0, t_max, n + 1, device=device)[1:].unsqueeze(-1)
     return t.requires_grad_(True)

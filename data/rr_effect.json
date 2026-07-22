@@ -1,0 +1,135 @@
+{
+  "lambda_um": 1.0,
+  "eps_rad": 1.1803760836059126e-08,
+  "eps_photon": 2.4263101323398024e-06,
+  "from_rest": [
+    {
+      "regime": "LT",
+      "a0": 0.85,
+      "chi": 2.062363612488832e-06,
+      "R": 7.24898462344481e-09
+    },
+    {
+      "regime": "WNL",
+      "a0": 8.5,
+      "chi": 2.0623636124888322e-05,
+      "R": 7.248984623444811e-06
+    },
+    {
+      "regime": "UR",
+      "a0": 85.0,
+      "chi": 0.0002062363612488832,
+      "R": 0.007248984623444811
+    }
+  ],
+  "measured": [
+    {
+      "polarization": "circular",
+      "H0": 0.0,
+      "regime": "LT",
+      "a0": 0.85,
+      "theta_max": 0.5934477527754086,
+      "theta_max_rr": 0.59344775548132,
+      "rel_change_percent": 4.559645514190818e-07
+    },
+    {
+      "polarization": "circular",
+      "H0": 0.0,
+      "regime": "WNL",
+      "a0": 8.5,
+      "theta_max": 3.643821223312598,
+      "theta_max_rr": 3.643828383802846,
+      "rel_change_percent": 0.00019651047098679473
+    },
+    {
+      "polarization": "circular",
+      "H0": 0.0,
+      "regime": "UR",
+      "a0": 85.0,
+      "theta_max": 8.196542155558104,
+      "theta_max_rr": 8.197378576448692,
+      "rel_change_percent": 0.010204557906416606
+    },
+    {
+      "polarization": "circular",
+      "H0": 1.0,
+      "regime": "LT",
+      "a0": 0.85,
+      "theta_max": 7.0229138706507195,
+      "theta_max_rr": 7.022022293119925,
+      "rel_change_percent": -0.012695265059707212
+    },
+    {
+      "polarization": "circular",
+      "H0": 1.0,
+      "regime": "WNL",
+      "a0": 8.5,
+      "theta_max": 11.626318668290462,
+      "theta_max_rr": 11.534695805383057,
+      "rel_change_percent": -0.7880642662693972
+    },
+    {
+      "polarization": "circular",
+      "H0": 1.0,
+      "regime": "UR",
+      "a0": 85.0,
+      "theta_max": 16.231471175807105,
+      "theta_max_rr": 14.197001128438647,
+      "rel_change_percent": -12.53410750838668
+    },
+    {
+      "polarization": "linear",
+      "H0": 0.0,
+      "regime": "LT",
+      "a0": 0.85,
+      "theta_max": 0.8259130407281088,
+      "theta_max_rr": 0.825913042340572,
+      "rel_change_percent": 1.952340117514808e-07
+    },
+    {
+      "polarization": "linear",
+      "H0": 0.0,
+      "regime": "WNL",
+      "a0": 8.5,
+      "theta_max": 4.306313081536176,
+      "theta_max_rr": 4.306317913739732,
+      "rel_change_percent": 0.00011221208175119888
+    },
+    {
+      "polarization": "linear",
+      "H0": 0.0,
+      "regime": "UR",
+      "a0": 85.0,
+      "theta_max": 8.88461050992886,
+      "theta_max_rr": 8.885385517918916,
+      "rel_change_percent": 0.008723038440341307
+    },
+    {
+      "polarization": "linear",
+      "H0": 1.0,
+      "regime": "LT",
+      "a0": 0.85,
+      "theta_max": 6.331544759285061,
+      "theta_max_rr": 6.33109071998903,
+      "rel_change_percent": -0.0071710666716047495
+    },
+    {
+      "polarization": "linear",
+      "H0": 1.0,
+      "regime": "WNL",
+      "a0": 8.5,
+      "theta_max": 10.933188922202916,
+      "theta_max_rr": 10.891882879502072,
+      "rel_change_percent": -0.3778041612082703
+    },
+    {
+      "polarization": "linear",
+      "H0": 1.0,
+      "regime": "UR",
+      "a0": 85.0,
+      "theta_max": 15.538323756737968,
+      "theta_max_rr": 13.987519353035346,
+      "rel_change_percent": -9.980512878875619
+    }
+  ]
+}

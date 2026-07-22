@@ -1,0 +1,18 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 N. S. Akintsov, A. P. Nevecheria, S. N. Andreev, Q. Qin
+
+The data files distributed with this repository -- specifically the contents
+of `checkpoints/` (trained network weights, loss histories, reference
+trajectories) and `data/` (the numerical content of every published figure)
+-- are licensed under the Creative Commons Attribution 4.0 International
+License.
+
+You are free to share and adapt this material for any purpose, including
+commercially, provided that you give appropriate credit, provide a link to
+the license, and indicate if changes were made.
+
+Full licence text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+The source code in this repository is licensed separately under the MIT
+License; see the LICENSE file.

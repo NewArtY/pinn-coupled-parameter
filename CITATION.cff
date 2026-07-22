@@ -1,0 +1,59 @@
+cff-version: 1.2.0
+title: "Coupled-Parameter PINN for Relativistic Electron Dynamics in Gaussian Laser Fields"
+message: "If you use this software, please cite both the software and the paper."
+type: software
+authors:
+  - family-names: Akintsov
+    given-names: "Nikolai S."
+    orcid: "https://orcid.org/0000-0002-1040-1292"
+    affiliation: "Research Center for Intelligent Information Technology, Nantong University"
+  - family-names: Nevecheria
+    given-names: "Artem P."
+    orcid: "https://orcid.org/0000-0001-6736-4691"
+    affiliation: "Department of Mathematical and Computer Methods, Kuban State University"
+  - family-names: Andreev
+    given-names: "Stepan N."
+    orcid: "https://orcid.org/0000-0003-3588-2894"
+    affiliation: "Moscow Institute of Physics and Technology"
+  - family-names: Qin
+    given-names: Qinhua
+    orcid: "https://orcid.org/0000-0003-0025-5188"
+    affiliation: "Shenzhen MSU-BIT University"
+license: MIT
+version: 1.0.0
+date-released: "2026-07-22"
+repository-code: "https://github.com/NewArtY/pinn-coupled-parameter"
+abstract: >-
+  Companion code for the PPCF paper on relativistic electron dynamics in
+  Gaussian laser fields.  Provides the coupled-parameter (rapidity)
+  kinematics, a DOP853 reference solver for the Lorentz force with an
+  optional Landau-Lifshitz radiation-reaction term, radiation spectra and
+  angular distributions, a Lorentz-invariant-constrained physics-informed
+  neural network with a curriculum trainer, a Gaussian-process surrogate for
+  the spectral linewidth, and scripts that regenerate every figure of the
+  paper.
+keywords:
+  - physics-informed neural networks
+  - relativistic electron dynamics
+  - laser synchrotron source
+  - Lobachevsky geometry
+  - radiation reaction
+  - nonlinear Thomson scattering
+preferred-citation:
+  type: article
+  title: "Relativistic Electron Dynamics in Gaussian Laser Fields: Coupled-Parameter Theory, Multi-Regime Analysis, and Physics-Informed Neural Network Modeling"
+  journal: "Plasma Physics and Controlled Fusion"
+  year: 2026
+  authors:
+    - family-names: Akintsov
+      given-names: "Nikolai S."
+      orcid: "https://orcid.org/0000-0002-1040-1292"
+    - family-names: Nevecheria
+      given-names: "Artem P."
+      orcid: "https://orcid.org/0000-0001-6736-4691"
+    - family-names: Andreev
+      given-names: "Stepan N."
+      orcid: "https://orcid.org/0000-0003-3588-2894"
+    - family-names: Qin
+      given-names: Qinhua
+      orcid: "https://orcid.org/0000-0003-0025-5188"
