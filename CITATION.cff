@@ -14,10 +14,10 @@ authors:
   - family-names: Andreev
     given-names: "Stepan N."
     orcid: "https://orcid.org/0000-0003-3588-2894"
-    affiliation: "Moscow Institute of Physics and Technology"
+    affiliation: 'Joint-Stock Company "Center for Research and Development", Moscow, Russia'
   - family-names: Qin
-    given-names: Qinhua
-    orcid: "https://orcid.org/0000-0003-0025-5188"
+    given-names: Qinghua
+    orcid: "https://orcid.org/0000-0003-0948-784X"
     affiliation: "Shenzhen MSU-BIT University"
 license: MIT
 version: 1.0.0
@@ -63,5 +63,5 @@ preferred-citation:
       given-names: "Stepan N."
       orcid: "https://orcid.org/0000-0003-3588-2894"
     - family-names: Qin
-      given-names: Qinhua
-      orcid: "https://orcid.org/0000-0003-0025-5188"
+      given-names: Qinghua
+      orcid: "https://orcid.org/0000-0003-0948-784X"
