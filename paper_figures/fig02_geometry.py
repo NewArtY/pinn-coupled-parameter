@@ -73,7 +73,7 @@ def main():
     ax_a.text(Z_F / 2, -2.0, r"$z_f$", color="0.35", ha="center")
     ax_a.annotate("", xy=(0.0, 1.0), xytext=(0.0, 0.0),
                   arrowprops=dict(arrowstyle="<->", color="0.45", lw=0.9))
-    ax_a.text(0.22, 0.5, r"$b_0$", color="0.25")
+    ax_a.text(0.22, 0.5, r"$w_0$", color="0.25")
 
     ax_a.set_xlim(-12.5, 12.5)
     ax_a.set_ylim(-3.2, 3.2)

@@ -44,7 +44,7 @@ def main():
 
     fig, ax = plt.subplots(figsize=(6.4, 4.0))
     ax.axhline(0.0, color="0.75", lw=0.8, ls="--", zorder=0)
-    ax.plot(theta, q3t, color="#1f77b4", label=r"$q_3/t$")
+    ax.plot(theta, q3t, color="#1f77b4", label=r"$q/q_\perp$")
     ax.plot(theta, dq3, color="#d62728", label=r"$\dot{q}_3=\tanh\theta$")
     ax.plot(th_ur, kin.q3_over_t_asymptote_ur(th_ur), ls=":", lw=1.8,
             color="#1f77b4", label=r"$-2e^{-2\theta}/\theta$  (UR)")
@@ -53,8 +53,8 @@ def main():
 
     # Annotate the actual limits rather than a (false) convergence: q3/t and
     # its UR asymptote both tend to 0 from below, while tanh(theta) -> 1.
-    ax.annotate(r"$q_3/t\rightarrow 0^-$", xy=(4.6, kin.q3_over_t(4.6)),
-                xytext=(3.4, -0.45), color="#1f77b4", fontsize=8.5,
+    ax.annotate(r"$q/q_\perp\rightarrow 0^-$", xy=(4.6, kin.q3_over_t(4.6)),
+                xytext=(3.2, -0.45), color="#1f77b4", fontsize=8.5,
                 arrowprops=dict(arrowstyle="->", color="#1f77b4", lw=0.8))
     ax.annotate(r"$\dot{q}_3\rightarrow 1$", xy=(4.6, kin.beta(4.6)),
                 xytext=(3.4, 0.75), color="#d62728", fontsize=8.5,
@@ -63,7 +63,7 @@ def main():
     ax.set_xlim(0.0, 5.0)
     ax.set_ylim(-1.4, 1.15)
     ax.set_xlabel(r"Rapidity $\theta$")
-    ax.set_ylabel(r"$q_3/t$ and $\dot{q}_3$")
+    ax.set_ylabel(r"$q/q_\perp$ and $\dot{q}_3$")
     ax.legend(loc="center right", framealpha=0.95)
 
     save_data("fig_new1", theta=theta, q3_over_t=q3t, dq3=dq3)
