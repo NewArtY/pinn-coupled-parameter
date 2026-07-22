@@ -67,12 +67,27 @@ def main():
             ax.plot(tr_rr["eta"] / L_PULSE, theta_rr / tmax if tmax > 0
                     else theta_rr, color="0.25", lw=1.0, ls="--", alpha=0.85)
             drop = 100.0 * (theta_rr.max() - tmax) / tmax if tmax > 0 else 0.0
+            # For the H0 = 0 (non-resonant) panels the radiation-reaction shift
+            # of theta_max is a delicate second-order quantity (the electron
+            # co-moves with the wave, gamma - P_z stays close to unity and the
+            # light-front invariant only drifts by O(eps_rad); the reduced LL
+            # force even induces a tiny *positive* net drift, the plane-wave
+            # radiation-reaction effect of Di Piazza (2008)).  Reporting its
+            # sign at the 1e-4 % level would over-state the model's resolution,
+            # so below a threshold we label the effect "negligible" rather than
+            # printing a spurious "+0.0 %".  The physically robust statement --
+            # the locally radiated power beta.f_rad <= 0 -- holds throughout
+            # (see tests/test_physics.py::test_rr_removes_energy_locally).
+            if abs(drop) < 0.05:
+                rr_txt = r"RR: negl."
+            else:
+                rr_txt = rf"RR: ${drop:+.1f}\%$"
 
             ax.axhline(0.0, color="0.8", lw=0.6, ls=":")
             ax.text(0.97, 0.93, rf"$\theta_{{\max}}={tmax:.2f}$",
                     transform=ax.transAxes, ha="right", va="top",
                     fontsize=7.5, color="0.35")
-            ax.text(0.97, 0.80, rf"RR: ${drop:+.1f}\%$",
+            ax.text(0.97, 0.80, rr_txt,
                     transform=ax.transAxes, ha="right", va="top",
                     fontsize=7, color="0.45")
             panel_label(ax, f"({'abcdefghijkl'[row * 3 + col]})")

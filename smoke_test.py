@@ -17,9 +17,12 @@ if __name__ == "__main__":
     t_max = 2.0 * abs(eta0) + 6.0 * L
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"[smoke] device={device}, L={L:.3f}, t_max={t_max:.3f}")
+    # train_one splits training into a warm and a polish phase; the smoke
+    # run uses a small 700 + 300 = 1000-epoch budget just to exercise the
+    # pipeline end to end (train_one has no single `epochs` argument).
     model, hist, (t_ref, y_ref) = train_one(
         0.85, L, t_max, eta0,
-        constrained=True, epochs=1000, device=device)
+        constrained=True, epochs_warm=700, epochs_polish=300, device=device)
 
     # Evaluation on dense grid
     model.eval()

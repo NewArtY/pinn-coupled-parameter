@@ -141,6 +141,29 @@ def figure11(runs, device="cuda"):
                 alpha=0.8, label=f"{tag} unconstrained PINN")
         ax.plot(t_ref_norm, err_ref, color=c, lw=0.8, ls="--", alpha=0.5)
 
+    # Hard-constraint variant (referee 3, comment 5): gamma = sqrt(1+|P|^2)
+    # is enforced analytically, so the invariant sits at the float32 floor,
+    # far below the soft-constrained network -- shown here for the UR regime,
+    # where the soft-constraint gap is largest.
+    hard_ckpt = CKPT_DIR / "pinn_UR_hard.pt"
+    if hard_ckpt.exists():
+        from model import HardConstraintPINN
+        info = runs["UR"]
+        y_ref = np.load(CKPT_DIR / "reference_UR.npz")["y"]
+        y_mean = tuple(float(v) for v in y_ref.mean(axis=0))
+        y_std = tuple(float(max(s, 1e-3)) for s in y_ref.std(axis=0))
+        mh = HardConstraintPINN(t_scale=info["t_max"], y_mean=y_mean,
+                                y_std=y_std).to(device)
+        mh.load_state_dict(torch.load(hard_ckpt, map_location=device,
+                                      weights_only=True))
+        mh.eval()
+        th, yh = evaluate(mh, info["t_max"], device=device)
+        err_h = np.maximum(np.abs(yh[:, 3]**2 - 1.0
+                                  - (yh[:, 0]**2 + yh[:, 1]**2 + yh[:, 2]**2)),
+                           1e-15)
+        ax.plot(th / info["t_max"], err_h, color="black", lw=1.4, ls="-.",
+                label="UR hard-constraint PINN")
+
     ax.set_yscale("log")
     ax.set_xlabel(r"normalized time $t / t_{\max}$")
     ax.set_ylabel(r"$|E^{2}-P^{2}-1|$")
@@ -157,56 +180,107 @@ def figure11(runs, device="cuda"):
 
 # ------------------------------------------------------------------ Fig. 12
 
-def spectral_linewidth_model(a0, H0, omega_drift=0.5):
-    """Heuristic but physically motivated spectral linewidth Delta_omega/omega.
+def simulated_linewidth(a0, H0, L_pulse=5.0 * 2.0 * math.pi, n_out=3000):
+    """Relative spectral linewidth Delta_omega/omega from a *simulated* orbit.
 
-    Captures three effects:
-      (i)  relativistic narrowing  ~ 1 / gamma^2 with gamma ~ sqrt(1 + a0^2)
-      (ii) magnetic-field broadening from cyclotron coupling
-      (iii) saturation at strong H0
+    The electron trajectory is integrated with the plane-wave DOP853 solver of
+    :mod:`dynamics`, and the linewidth is the power-weighted relative spread of
+    the instantaneous synchrotron critical frequency omega_c(t) along that
+    orbit,
+
+        Delta_omega/omega = sqrt( <(omega_c - <omega_c>)^2>_P ) / <omega_c>_P ,
+
+    with the weights P(t)/sum P(t) given by the Lienard radiated power.  This
+    is a genuine observable of the integrated dynamics (it uses the simulated
+    gamma(t) and betadot(t)), not an analytic closed form -- so the Gaussian
+    process below is a surrogate of the *simulation*, and its held-out error is
+    a meaningful measure of how well it can replace the solver during a
+    parametric scan.  Returns NaN when the orbit radiates too little to define
+    a spectrum (e.g. the deep-linear regime).
     """
-    gamma = np.sqrt(1.0 + a0**2)
-    base = 1.0 / (gamma**2)
-    broadening = 1.0 + omega_drift * H0**2 / (1.0 + 0.05 * H0**3)
-    return base * broadening
+    from dynamics import PulseConfig, solve_trajectory
+    from spectra import instantaneous_power, critical_frequency
+
+    cfg = PulseConfig(a0=float(a0), H0=float(H0), plane_wave=True, L=L_pulse)
+    try:
+        tr = solve_trajectory(cfg, n_out=n_out)
+    except RuntimeError:
+        return float("nan")
+    P = instantaneous_power(tr)
+    wc = critical_frequency(tr)
+    keep = (P > 1e-6 * P.max()) & (wc > 0.0)
+    if keep.sum() < 5:
+        return float("nan")
+    P, wc = P[keep], wc[keep]
+    w = P / P.sum()
+    mean = float((w * wc).sum())
+    var = float((w * (wc - mean) ** 2).sum())
+    return math.sqrt(var) / mean if mean > 0 else float("nan")
+
+
+def _linewidth_grid(a0_vals, H0_vals):
+    """Evaluate simulated_linewidth over the outer product of the two axes."""
+    A, H = np.meshgrid(a0_vals, H0_vals)
+    Z = np.empty_like(A)
+    for i in range(A.shape[0]):
+        for j in range(A.shape[1]):
+            Z[i, j] = simulated_linewidth(A[i, j], H[i, j])
+    return A, H, Z
 
 
 def figure12():
-    # Build training grid (50 x 50) + sample for GP training, then evaluate
-    # the trained surrogate on a denser 200 x 200 grid.
+    """Gaussian-process surrogate of the *simulated* spectral linewidth.
+
+    The GP is trained on linewidths computed by the DOP853 solver on a coarse
+    (a0, H0) grid and validated on a disjoint held-out set of simulated points
+    (the training and test nodes are interleaved so the test points fall
+    strictly between training nodes).  The reported error is therefore an
+    honest interpolation error of the surrogate against the solver, not a fit
+    of an analytic formula to itself.
+    """
     from sklearn.gaussian_process import GaussianProcessRegressor
     from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 
-    n_train = 50
-    a0_grid = np.linspace(1.0, 100.0, n_train)
-    H0_grid = np.linspace(0.0, 10.0, n_train)
-    A, H = np.meshgrid(a0_grid, H0_grid)
-    Z = spectral_linewidth_model(A, H)
+    # --- training grid: real simulated linewidths -------------------------
+    a0_train = np.logspace(0.0, 2.0, 13)          # 1 ... 100, log-spaced
+    H0_train = np.linspace(0.0, 10.0, 9)          # 0 ... 10
+    A, H, Z = _linewidth_grid(a0_train, H0_train)
+    finite = np.isfinite(Z.ravel())
+    n_drop = int((~finite).sum())
+    if n_drop:
+        print(f"  [fig12] dropped {n_drop}/{Z.size} training points with no "
+              f"definable spectrum")
 
-    X_train = np.column_stack([np.log10(A.ravel() + 1e-3),
-                               H.ravel()])
-    y_train = np.log10(Z.ravel() + 1e-12)
+    X_train = np.column_stack([np.log10(A.ravel() + 1e-3), H.ravel()])[finite]
+    y_train = np.log10(Z.ravel()[finite] + 1e-12)
 
-    # Train GP with RBF kernel + constant amplitude
     kernel = C(1.0, (1e-3, 1e3)) * RBF(length_scale=[0.5, 1.0],
                                        length_scale_bounds=(1e-2, 1e2))
     gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=4,
                                   normalize_y=True)
     gp.fit(X_train, y_train)
 
-    # Evaluate on dense grid
+    # --- held-out test set: simulated points *between* the training nodes --
+    a0_test = np.logspace(0.15, 1.85, 8)
+    H0_test = np.linspace(0.6, 9.4, 6)
+    At, Ht, Zt = _linewidth_grid(a0_test, H0_test)
+    finite_t = np.isfinite(Zt.ravel())
+    Xt = np.column_stack([np.log10(At.ravel() + 1e-3), Ht.ravel()])[finite_t]
+    yt_true = np.log10(Zt.ravel()[finite_t] + 1e-12)
+    yt_pred = gp.predict(Xt)
+    log_rmse = float(np.sqrt(np.mean((yt_pred - yt_true) ** 2)))
+    rel_err = np.abs(10.0 ** yt_pred - 10.0 ** yt_true) / (10.0 ** yt_true)
+    max_rel = float(rel_err.max())
+    print(f"  [fig12] held-out surrogate error: log-RMSE = {log_rmse:.3e}, "
+          f"max relative = {max_rel:.2%}  (n_test = {finite_t.sum()})")
+
+    # --- dense surrogate surface (GP prediction, cheap) -------------------
     n_eval = 200
-    a0_eval = np.linspace(1.0, 100.0, n_eval)
+    a0_eval = np.logspace(0.0, 2.0, n_eval)
     H0_eval = np.linspace(0.0, 10.0, n_eval)
     Ae, He = np.meshgrid(a0_eval, H0_eval)
     Xe = np.column_stack([np.log10(Ae.ravel() + 1e-3), He.ravel()])
     Ze_pred = 10.0 ** gp.predict(Xe).reshape(Ae.shape)
-
-    # Cross-validation RMS error
-    Ze_true = spectral_linewidth_model(Ae, He)
-    rel_err = np.abs(Ze_pred - Ze_true) / (np.abs(Ze_true) + 1e-12)
-    rmse = float(np.sqrt(np.mean((np.log10(Ze_pred) - np.log10(Ze_true))**2)))
-    print(f"  GP fit log-RMSE = {rmse:.3e};  max relative error = {rel_err.max():.2%}")
 
     fig, ax = plt.subplots(figsize=(6.0, 5.0), constrained_layout=True)
     pcm = ax.pcolormesh(Ae, He, np.log10(Ze_pred), cmap="viridis",
@@ -216,13 +290,18 @@ def figure12():
     ax.set_xscale("log")
     cbar = fig.colorbar(pcm, ax=ax)
     cbar.set_label(r"$\log_{10}\,(\Delta\tilde{\omega}'/\omega)$")
-    # Overlay training points
-    ax.scatter(A.ravel(), H.ravel(), s=4, c="white", alpha=0.5,
-               label=f"training samples ({n_train**2})")
-    ax.legend(loc="upper right", fontsize=8, framealpha=0.85)
-    ax.set_title(r"Trained Gaussian-process surrogate "
-                 r"$\Delta\tilde{\omega}'/\omega(a_{0},H_{0})$")
-    out = FIG_DIR / "fig_new12_surrogate_surface_stub.pdf"
+    ax.scatter(A.ravel()[finite], H.ravel()[finite], s=6, c="white",
+               alpha=0.6, edgecolors="none",
+               label=f"training orbits ({int(finite.sum())})")
+    ax.scatter(At.ravel()[finite_t], Ht.ravel()[finite_t], s=10,
+               marker="x", c="red", alpha=0.7,
+               label=f"held-out test ({int(finite_t.sum())})")
+    ax.legend(loc="upper right", fontsize=7.5, framealpha=0.85)
+    ax.set_title(r"GP surrogate of the simulated linewidth "
+                 r"$\Delta\tilde{\omega}'/\omega(a_{0},H_{0})$"
+                 "\n"
+                 rf"held-out log-RMSE $={log_rmse:.2e}$")
+    out = FIG_DIR / "fig_new12_surrogate_surface.pdf"
     fig.savefig(out, dpi=200)
     fig.savefig(out.with_suffix(".png"), dpi=200)
     plt.close(fig)

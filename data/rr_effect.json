@@ -65,8 +65,8 @@
       "regime": "WNL",
       "a0": 8.5,
       "theta_max": 11.626318668290462,
-      "theta_max_rr": 11.534695805383057,
-      "rel_change_percent": -0.7880642662693972
+      "theta_max_rr": 11.53469580535277,
+      "rel_change_percent": -0.7880642665298999
     },
     {
       "polarization": "circular",
@@ -74,8 +74,8 @@
       "regime": "UR",
       "a0": 85.0,
       "theta_max": 16.231471175807105,
-      "theta_max_rr": 14.197001128438647,
-      "rel_change_percent": -12.53410750838668
+      "theta_max_rr": 14.19700112937146,
+      "rel_change_percent": -12.53410750263974
     },
     {
       "polarization": "linear",
@@ -101,8 +101,8 @@
       "regime": "UR",
       "a0": 85.0,
       "theta_max": 8.88461050992886,
-      "theta_max_rr": 8.885385517918916,
-      "rel_change_percent": 0.008723038440341307
+      "theta_max_rr": 8.885385518050041,
+      "rel_change_percent": 0.008723039916211664
     },
     {
       "polarization": "linear",
@@ -128,8 +128,8 @@
       "regime": "UR",
       "a0": 85.0,
       "theta_max": 15.538323756737968,
-      "theta_max_rr": 13.987519353035346,
-      "rel_change_percent": -9.980512878875619
+      "theta_max_rr": 13.987519351752606,
+      "rel_change_percent": -9.980512887130944
     }
   ]
 }

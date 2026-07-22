@@ -32,8 +32,10 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from model import CoupledPINN
 from physics import solve_reference
 from train import train_one
+from train_ur_curriculum import build_data, reset_head_for_new_regime, stage_train
 
 A0_WNL = 8.5
 L = 2.0 * math.pi
@@ -51,23 +53,51 @@ def invariant_stats(model, t_ref, device):
 
 
 def curriculum_wnl(device, epochs_warm, epochs_polish):
-    """Two-stage curriculum a0: 1.0 -> 8.5 with hidden-weight transfer."""
-    model = None
-    for a0, lam in ((1.0, 1e6), (A0_WNL, 1e3)):
-        m, _, ref = train_one(a0, L, T_MAX, ETA0, constrained=True,
-                              lam_phys_warm=1e2, lam_phys_polish=lam,
-                              epochs_warm=epochs_warm,
-                              epochs_polish=epochs_polish,
-                              device=device, seed=0)
-        if model is not None:
-            # transfer hidden weights, keep the new affine normalization
-            state = model.state_dict()
-            new = m.state_dict()
-            for k in new:
-                if k.startswith("net.") and new[k].shape == state[k].shape:
-                    new[k] = state[k]
-            m.load_state_dict(new)
-        model = m
+    """Two-stage curriculum a0: 1.0 -> 8.5 with hidden-weight transfer.
+
+    Uses the same single-model, head-reset pattern as the UR curriculum
+    (``train_ur_curriculum.run_curriculum``): a *single* ``CoupledPINN``
+    object is carried across both stages, so the trained hidden weights of
+    stage 1 (a0 = 1) initialise stage 2 (a0 = 8.5), while only the
+    per-channel affine head (y_mean / y_std) is reset from the new reference
+    statistics via ``reset_head_for_new_regime``.
+
+    An earlier version rebuilt the model from scratch each stage with
+    ``train_one`` and copied ``net.*`` weights *after* training -- which
+    overwrote the freshly optimised a0 = 8.5 hidden weights with the a0 = 1
+    ones, silently discarding the WNL optimisation and inverting the intended
+    warm-start.  That made the reported "curriculum" run meaningless.  Fixed
+    to transfer weights as an initialisation *before* each stage's training.
+    """
+    torch.manual_seed(0)
+    np.random.seed(0)
+    schedule = [(1.0, 1e6), (A0_WNL, 1e3)]
+
+    # Build the first-stage reference only to initialise the affine head;
+    # the hidden weights start from the CoupledPINN default init and are then
+    # carried forward across stages.
+    _, y_ref0, _, _ = build_data(schedule[0][0], L, ETA0, T_MAX,
+                                 n_data=1000, device=device)
+    y_mean0 = tuple(float(v) for v in y_ref0.mean(axis=0))
+    y_std0 = tuple(float(max(s, 1e-3)) for s in y_ref0.std(axis=0))
+    model = CoupledPINN(t_scale=T_MAX, y_mean=y_mean0, y_std=y_std0).to(device)
+
+    y0_target = torch.tensor([[0.0, 0.0, 0.0, 1.0, ETA0]],
+                             dtype=torch.float32, device=device)
+    t_col = torch.linspace(0.0, T_MAX, 2000, device=device).unsqueeze(-1)
+
+    ref = None
+    for s_idx, (a0, lam) in enumerate(schedule):
+        t_ref, y_ref, t_data, y_data = build_data(
+            a0, L, ETA0, T_MAX, n_data=1000, device=device)
+        # Reset the affine head for the new regime; hidden weights are
+        # inherited (transferred) from the previous stage.
+        reset_head_for_new_regime(model, y_ref)
+        stage_train(model, t_data, y_data, t_col, y0_target,
+                    a0, L, lam_data=1e2, lam_ic=1e3, lam_phys=lam,
+                    epochs_warm=epochs_warm, epochs_polish=epochs_polish,
+                    constrained=True, label_prefix=f"wnl-s{s_idx+1}-a{a0:.0f}")
+        ref = (t_ref, y_ref)
     return model, ref
 
 

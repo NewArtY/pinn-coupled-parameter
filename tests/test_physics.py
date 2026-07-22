@@ -115,6 +115,30 @@ def test_radiation_reaction_is_negligible_without_static_field():
     assert rel < 1e-2
 
 
+def test_rr_removes_energy_locally():
+    """The reduced Landau-Lifshitz force never does positive work locally.
+
+    The *net* sign of the theta_max shift at H0 = 0 is a delicate O(eps_rad)
+    quantity -- the reduced force even induces a tiny positive light-front
+    drift (the plane-wave radiation-reaction effect of Di Piazza 2008), which
+    is why Fig. 4 labels that case "negligible" rather than quoting a sign.
+    The physically robust invariant, and the one that must never regress, is
+    that the locally radiated power beta . f_rad is non-positive at every
+    point along the trajectory.
+    """
+    from dynamics import fields
+    cfg = PulseConfig(a0=85.0, L=5.0 * TWO_PI, H0=1.0, plane_wave=True)
+    tr = solve_trajectory(cfg, n_out=2000)
+    Bstat = np.array([0.0, 0.0, cfg.H0])
+    worst = -np.inf
+    for i in range(0, len(tr["t"]), 5):
+        E, B = fields(tr["t"][i], tr["r"][i], cfg)
+        f_rad = rr.landau_lifshitz_force(tr["P"][i], E, B + Bstat,
+                                         cfg.lambda_um)
+        worst = max(worst, float(tr["beta"][i] @ f_rad))
+    assert worst <= 1e-12
+
+
 def test_radiation_reaction_matters_at_cyclotron_resonance():
     """Under the resonant lock the classical result is no longer trustworthy."""
     kw = dict(a0=85.0, L=5.0 * TWO_PI, H0=1.0, plane_wave=True)
