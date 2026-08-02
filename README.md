@@ -1,8 +1,6 @@
 # Coupled-parameter PINN for relativistic electron dynamics
 
-<!-- Insert after the first Zenodo release:
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
--->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21495056.svg)](https://doi.org/10.5281/zenodo.21495056)
 [![ci](https://github.com/NewArtY/pinn-coupled-parameter/actions/workflows/ci.yml/badge.svg)](https://github.com/NewArtY/pinn-coupled-parameter/actions/workflows/ci.yml)
 
 Companion code repository for the paper:

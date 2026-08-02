@@ -3,7 +3,7 @@
   "upload_type": "software",
   "license": "MIT",
   "access_right": "open",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "language": "eng",
   "description": "<p>Companion code for the <i>Plasma Physics and Controlled Fusion</i> paper &ldquo;Relativistic Electron Dynamics in Gaussian Laser Fields: Coupled-Parameter Theory, Multi-Regime Analysis, and Physics-Informed Neural Network Modeling&rdquo;.</p><p>Contents: coupled-parameter (rapidity) kinematics in Lobachevsky geometry; a high-accuracy DOP853 solver for the Lorentz force in a Gaussian pulse with linear, circular, elliptical, Laguerre-Gauss (OAM) and mixed polarizations, a co-axial static magnetic field, and an optional Landau-Lifshitz radiation-reaction term; radiation spectra and Li&eacute;nard-Wiechert angular distributions; a Lorentz-invariant-constrained physics-informed neural network with soft- and hard-constraint variants and a curriculum trainer for the ultrarelativistic regime; a Gaussian-process surrogate for the spectral linewidth; and scripts regenerating every figure of the paper together with the numerical data behind them.</p><p>Code is released under the MIT licence; trained checkpoints and reference data under CC BY 4.0.</p>",
   "creators": [
