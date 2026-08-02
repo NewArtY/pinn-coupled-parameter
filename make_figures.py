@@ -1,4 +1,4 @@
-"""Generate Fig. 10, Fig. 11, and Fig. 12 from the trained checkpoints.
+"""Generate Fig. 9, Fig. 10, and Fig. 11 from the trained checkpoints.
 
 By default writes PDFs and PNGs into ./figures/ next to this file.
 Override the destination with the FIG_OUTDIR environment variable.
@@ -41,9 +41,9 @@ def evaluate(model, t_max, n=4000, device="cuda"):
     return t.cpu().numpy().squeeze(), y
 
 
-# ------------------------------------------------------------------ Fig. 10
+# ------------------------------------------------------------------ Fig. 9
 
-def figure10(runs, device="cuda"):
+def figure9(runs, device="cuda"):
     fig, axes = plt.subplots(2, 3, figsize=(11.0, 5.6),
                              constrained_layout=True)
     regimes = ["LT", "WNL", "UR"]
@@ -90,16 +90,16 @@ def figure10(runs, device="cuda"):
         ax.grid(alpha=0.3)
 
     axes[0, 0].legend(loc="lower right", fontsize=8, framealpha=0.9)
-    out = FIG_DIR / "fig_new10_pinn_trajectory.pdf"
+    out = FIG_DIR / "fig_new9_pinn_trajectory.pdf"
     fig.savefig(out, dpi=200)
     fig.savefig(out.with_suffix(".png"), dpi=200)
     plt.close(fig)
     print(f"  wrote {out}")
 
 
-# ------------------------------------------------------------------ Fig. 11
+# ------------------------------------------------------------------ Fig. 10
 
-def figure11(runs, device="cuda"):
+def figure10(runs, device="cuda"):
     fig, ax = plt.subplots(figsize=(7.0, 4.6), constrained_layout=True)
 
     regimes = ["LT", "WNL", "UR"]
@@ -171,14 +171,14 @@ def figure11(runs, device="cuda"):
     ax.grid(alpha=0.3, which="both")
     ax.legend(loc="best", fontsize=8, ncol=2, framealpha=0.95)
 
-    out = FIG_DIR / "fig_new11_lorentz_invariant.pdf"
+    out = FIG_DIR / "fig_new10_lorentz_invariant.pdf"
     fig.savefig(out, dpi=200)
     fig.savefig(out.with_suffix(".png"), dpi=200)
     plt.close(fig)
     print(f"  wrote {out}")
 
 
-# ------------------------------------------------------------------ Fig. 12
+# ------------------------------------------------------------------ Fig. 11
 
 def simulated_linewidth(a0, H0, L_pulse=5.0 * 2.0 * math.pi, n_out=3000):
     """Relative spectral linewidth Delta_omega/omega from a *simulated* orbit.
@@ -228,7 +228,7 @@ def _linewidth_grid(a0_vals, H0_vals):
     return A, H, Z
 
 
-def figure12():
+def figure11():
     """Gaussian-process surrogate of the *simulated* spectral linewidth.
 
     The GP is trained on linewidths computed by the DOP853 solver on a coarse
@@ -301,7 +301,7 @@ def figure12():
                  r"$\Delta\tilde{\omega}'/\omega(a_{0},H_{0})$"
                  "\n"
                  rf"held-out log-RMSE $={log_rmse:.2e}$")
-    out = FIG_DIR / "fig_new12_surrogate_surface.pdf"
+    out = FIG_DIR / "fig_new11_surrogate_surface.pdf"
     fig.savefig(out, dpi=200)
     fig.savefig(out.with_suffix(".png"), dpi=200)
     plt.close(fig)
@@ -314,11 +314,11 @@ def main():
     with open(CKPT_DIR / "runs.json") as f:
         runs = json.load(f)
     print("[fig 10]")
-    figure10(runs, device=device)
+    figure9(runs, device=device)
     print("[fig 11]")
-    figure11(runs, device=device)
+    figure10(runs, device=device)
     print("[fig 12]")
-    figure12()
+    figure11()
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Figure 2 -- interaction geometry of the Gaussian beam.
+"""Figure 1 -- interaction geometry of the Gaussian beam.
 
 (a) side view of the beam envelope b(z) = b0 sqrt(1 + z^2/z_f^2) with the
     gyrovector triad (k, s, n) at the focus O';
@@ -108,8 +108,8 @@ def main():
     ax_c.legend(loc="upper right", fontsize=7)
     panel_label(ax_c, "(c)", loc=(0.03, 0.20))
 
-    save_data("fig_new2_geometry", z_over_lambda=zi, I_over_Imax=inten)
-    return save(fig, "fig_new2_geometry")
+    save_data("fig_new1_geometry", z_over_lambda=zi, I_over_Imax=inten)
+    return save(fig, "fig_new1_geometry")
 
 
 if __name__ == "__main__":

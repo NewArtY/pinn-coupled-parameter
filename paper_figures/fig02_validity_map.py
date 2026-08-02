@@ -1,4 +1,4 @@
-"""Figure 13 (new) -- validity domain of the classical, RR-free treatment.
+"""Figure 2 (new) -- validity domain of the classical, RR-free treatment.
 
 Left: map in the (a0, gamma0) plane for the laser-synchrotron-source geometry
 (a beam of Lorentz factor gamma0 counter-propagating into the pulse).  The
@@ -123,7 +123,7 @@ def main():
     panel_label(ax, "(b)")
 
     fig.tight_layout()
-    save_data("fig_new13_validity_map",
+    save_data("fig_new2_validity_map",
               a0=A.ravel(), gamma0=G.ravel(), R=R.ravel(), chi=X.ravel())
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     with open(DATA_DIR / "rr_effect.json", "w") as fh:
@@ -136,7 +136,7 @@ def main():
                         "R": float(R_from_rest(REGIME_A0[t], LAMBDA_UM))}
                        for t in ("LT", "WNL", "UR")],
                    "measured": rows}, fh, indent=2)
-    return save(fig, "fig_new13_validity_map")
+    return save(fig, "fig_new2_validity_map")
 
 
 if __name__ == "__main__":

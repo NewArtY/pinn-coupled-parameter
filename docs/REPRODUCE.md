@@ -13,18 +13,16 @@ figures can be requested by number.
 
 | Fig. | Script | Runtime (CPU) | Needs checkpoints |
 |------|--------|---------------|-------------------|
-| 1 | `paper_figures/fig01_gudermannian.py` | < 1 s | no |
-| 2 | `paper_figures/fig02_geometry.py` | < 1 s | no |
+| 1 | `paper_figures/fig01_geometry.py` | < 1 s | no |
+| 2 | `paper_figures/fig02_validity_map.py` | ~90 s | no |
 | 3 | `paper_figures/fig03_sync_map.py` | ~2 s | no |
 | 3′ | `paper_figures/fig03_sync_map.py --ode` | ~8 min | no |
 | 4 | `paper_figures/fig04_multiregime.py` | ~40 s | no |
 | 5 | `paper_figures/fig05_phase_H0.py` | ~15 s | no |
-| 6a/6b | `paper_figures/fig06_polarization.py` | ~25 s | no |
+| 6 | `paper_figures/fig06_polarization.py` | ~25 s | no |
 | 7 | `paper_figures/fig07_spectral.py` | ~30 s | no |
 | 8 | `paper_figures/fig08_directionality.py` | ~4 min | no |
-| 9 | `paper_figures/fig09_pinn_architecture.py` | < 1 s | no |
-| 10–12 | `make_figures.py` | ~20 s | **yes** |
-| 13 | `paper_figures/fig13_validity_map.py` | ~90 s | no |
+| 9–11 | `make_figures.py` | ~20 s | **yes** |
 
 The numerical content of each figure is written to `data/<stem>.csv`.
 
