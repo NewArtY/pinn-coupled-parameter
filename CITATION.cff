@@ -20,8 +20,8 @@ authors:
     orcid: "https://orcid.org/0000-0003-0948-784X"
     affiliation: "Institute of Advanced Interdisciplinary Technology, Shenzhen MSU-BIT University, Shenzhen 518172, China"
 license: MIT
-version: 1.0.0
-date-released: "2026-07-22"
+version: 1.1.0
+date-released: "2026-08-02"
 doi: "10.5281/zenodo.21495056"
 repository-code: "https://github.com/NewArtY/pinn-coupled-parameter"
 identifiers:
@@ -29,8 +29,8 @@ identifiers:
     value: "10.5281/zenodo.21495056"
     description: "Concept DOI (all versions)"
   - type: doi
-    value: "10.5281/zenodo.21495057"
-    description: "Version 1.0.0 (used in the paper)"
+    value: "10.5281/zenodo.21759713"
+    description: "Version 1.1.0 (used in the paper)"
 abstract: >-
   Companion code for the PPCF paper on relativistic electron dynamics in
   Gaussian laser fields.  Provides the coupled-parameter (rapidity)

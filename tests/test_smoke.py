@@ -41,10 +41,9 @@ def test_instantaneous_power_is_non_negative():
 
 
 @pytest.mark.parametrize("mod", [
-    "fig01_gudermannian", "fig02_geometry", "fig03_sync_map",
+    "fig01_geometry", "fig02_validity_map", "fig03_sync_map",
     "fig04_multiregime", "fig05_phase_H0", "fig06_polarization",
-    "fig07_spectral", "fig08_directionality", "fig09_pinn_architecture",
-    "fig13_validity_map",
+    "fig07_spectral", "fig08_directionality",
 ])
 def test_figure_scripts_import(mod):
     import importlib
