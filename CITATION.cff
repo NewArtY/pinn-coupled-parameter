@@ -28,6 +28,9 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.21495056"
     description: "Concept DOI (all versions; always resolves to the latest)"
+  - type: doi
+    value: "10.5281/zenodo.21760134"
+    description: "Version 1.1.1 (this release, cited by the paper)"
 abstract: >-
   Companion code for the PPCF paper on relativistic electron dynamics in
   Gaussian laser fields.  Provides the coupled-parameter (rapidity)

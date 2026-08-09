@@ -8,7 +8,7 @@ always resolves to the latest version.
 
 ## [1.1.1] — 2026-08-02
 
-DOI: assigned on deposit (concept DOI resolves to it as the latest version).
+DOI: 10.5281/zenodo.21760134.
 
 ### Fixed
 
